@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.eqxiu.mock.infra.persistence.mapper.CallbackMapper">
+
+    <insert id="saveLogInfo" parameterType="cn.eqxiu.mock.domain.entity.LogInfo">
+        insert into log_info (code, request_id, request_url, request_param, return_value, request_time)
+        values (
+                #{code},
+                #{requestId},
+                #{requestUrl},
+                #{requestParam},
+                #{returnValue},
+                #{requestTime})
+    </insert>
+
+    <select id="selectLogList" parameterType="string" resultType="cn.eqxiu.mock.domain.entity.LogInfo">
+        select a.code, a.request_id requestId, a.request_url requestUrl, a.request_param requestParam, a.return_value returnValue, a.request_time requestTime
+        from log_info a
+        <where>
+            <if test="code != null and code != ''">
+                and a.code = #{code}
+            </if>
+            <if test="url != null and url != ''">
+                and a.request_url = #{url}
+            </if>
+        </where>
+        order by a.request_time desc
+        limit 10
+    </select>
+
+    <select id="selectCallbackList" parameterType="string" resultType="cn.eqxiu.mock.infra.web.vo.CallbackUrlListVO">
+        select a.id, a.name, a.url, a.group_id groupId, b.group_name groupName
+        from callback_url a
+        left join `group` b
+        on a.group_id = b.group_id
+        <where>
+            <if test="key != null and key != ''">
+                a.name like concat('%',#{key},'%')
+            </if>
+        </where>
+        group by a.group_id, a.id
+    </select>
+
+</mapper>

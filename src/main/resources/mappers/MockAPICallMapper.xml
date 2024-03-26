@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.eqxiu.mock.infra.persistence.mapper.MockAPICallMapper">
+    <sql id="Base_Column_List">
+      id, name, method, url, `group_id`, `request_params`,`response_params`
+    </sql>
+    <resultMap id="BaseResultMap" type="cn.eqxiu.mock.domain.entity.OpenInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="title" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="method" property="method" jdbcType="VARCHAR"/>
+        <result column="group_id" property="parentId" jdbcType="INTEGER"/>
+        <result column="response_params" property="responseData" jdbcType="VARCHAR"/>
+        <result column="request_params" property="requestParams" javaType="String" jdbcType="VARCHAR"
+                typeHandler="cn.eqxiu.mock.config.RequestParamTypeHandler"/>
+    </resultMap>
+
+    <select id="getAllInterface" resultType="java.util.Map">
+        SELECT g.group_id as parentId, g.group_name as groupName, JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'id', i.id,
+        'name', i.name,
+        'method', i.method,
+        'url', i.url
+        )
+        ) AS interfaces
+        FROM interface_info i
+        LEFT JOIN `group` g ON g.group_id = i.group_id
+        <where>
+            <if test="key != null and key != ''">
+                i.name like concat('%',#{key},'%')
+            </if>
+        </where>
+        GROUP BY g.group_id
+
+    </select>
+    <select id="getInterfaceById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM interface_info
+        WHERE id = #{id}
+    </select>
+
+</mapper>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="//lib.eqh5.com/element-ui/2.4.11/theme-chalk/index.min.css">
+    <link rel="stylesheet" href="${ctx}/static/css/index.css">
+    <title>${corpName!} | 开放支撑平台</title>
+</head>
+<body>
+<div id="app">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+
+        <el-tab-pane label="模拟调用" name="api">
+            <div style="display: flex">
+                <!-- 接口列表区 -->
+                <div class="invoke-aside aside">
+                    <div class="search-box">
+                        <el-input v-model="invoke_input" style="width: 70%" placeholder="请输入接口名称"></el-input>
+                        <el-button type="primary" plain @click="searchName(invoke_input, 1)">搜索</el-button>
+                    </div>
+                    <h3 style="margin-top: 20px">调用接口列表</h3>
+                    <div class="menu-box">
+                        <el-menu>
+                            <el-submenu v-for="(apiGroup) in apiList" :key="apiGroup.parentId" :index="apiGroup.parentId">
+                                <template #title>
+                                    <span style="font-size: 16px"><strong>{{ apiGroup.groupName }}</strong></span>
+                                </template>
+                                <el-menu-item v-for="(api) in apiGroup.interfaces"
+                                              :key="api.id" :index="api.id"
+                                              @click="getInterfaceParams(api.id)">
+                                    {{ api.name }}
+                                </el-menu-item>
+                            </el-submenu>
+                        </el-menu>
+                    </div>
+                </div>
+                <div class="content-main">
+                    <div class="invoke-params">
+                        <div style="display: flex;justify-content: space-around;">
+                            <el-input v-model="req_url" placeholder="URL" style="width: 98%; font-size: 18px;" readonly>
+                                <template #prepend>
+                                    {{ req_type }}
+                                </template>
+                            </el-input>
+                            <button class="custom-btn btn" @click="getReqParams(paramsData)"><span>请求</span></button>
+                        </div>
+                        <div class="qurey-params">
+                            <div class="query-params-head">
+                                <span style="padding-top: 10px;font-size: larger;font-weight: bold;">{{paramsData.title}}</span>
+                            </div>
+                            <el-table :data="reqParams" height="30vh" class="params-table" border>
+                                <el-table-column prop="name" label="参数名" width="150" align="center"></el-table-column>
+                                <el-table-column prop="type" label="参数类型" align="center" width="150"></el-table-column>
+                                <el-table-column prop="required" label="是否必填" align="center" width="120"></el-table-column>
+                                <el-table-column label="参数值" align="center" width="280">
+                                    <template slot-scope="scope">
+                                        <span><el-input v-model="scope.row.defaultValue" :placeholder="'参数值'"
+                                                        :readonly="scope.row.defaultValue[0] === '$'"
+                                                        style="text-align: center; width: 100%" size="small">
+                                        </el-input></span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="desc" label="说明" min-width="170" align="center"></el-table-column>
+                            </el-table>
+                        </div>
+
+                    </div>
+                    <div style="height: 48vh">
+                        <div style="font-size: larger; height: 8%; font-weight: bold; margin: 3px;">请求结果</div>
+                        <div class="invoke-result">
+                            <el-input v-model="req_result"
+                                      style="width: 100%;font-size: 16px;height: 100%;
+                                      font-family: 'Courier New', monospace;"
+                                      type="textarea"
+                                      placeholder="请求结果">
+                            </el-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="模拟集成" name="integration">
+            <div style="display: flex">
+                <!-- 接口列表区 -->
+                <div class="integration-aside aside">
+                    <div class="search-box">
+                        <el-input v-model="integration_input" style="width: 70%" placeholder="请输入接口名称"></el-input>
+                        <el-button type="primary" plain @click="searchName(integration_input, 2)">搜索</el-button>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between">
+                        <h3 style="margin-top: 20px; margin-right: 10px;">集成接口列表</h3>
+                        <span><el-button type="primary" size="small" width="120" @click="getAuthorization">获取Authorization</el-button></span>
+                    </div>
+                    <div class="menu-box">
+                        <el-menu>
+                            <el-submenu v-for="(apiGroup) in integrationList" :key="apiGroup.groupId" :index="apiGroup.groupId">
+                                <template #title>
+                                    <span style="font-size: 16px"><strong>{{ apiGroup.groupName }}</strong></span>
+                                </template>
+                                <el-menu-item v-for="(api) in apiGroup.pages" :key="api.pageId" :index="api.pageId" @click="displayPage(api)">
+                                    {{ api.pageName }}
+                                </el-menu-item>
+                            </el-submenu>
+                        </el-menu>
+                    </div>
+                </div>
+                <div class="content-main">
+                    <div class="iframe-box">
+
+                        <iframe v-if="iframe_url" :src="iframe_url" style="width: 100%; height: 100%; border: none;"></iframe>
+                        <div v-else style="text-align: center; padding-top: 100px; font-size: 20px; ">
+                            <el-button plain @click="displayManual">查看集成页面操作手册</el-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="模拟回调" name="callback">
+            <div style="display: flex">
+                <!-- 接口列表区 -->
+                <div class="callback-aside aside">
+                    <div class="search-box">
+                        <el-input v-model="callback_input" style="width: 70%" placeholder="请输入接口名称"></el-input>
+                        <el-button type="primary" plain @click="searchName(callback_input, 3)">搜索</el-button>
+                    </div>
+                    <h3 style="margin-top: 20px">回调接口列表</h3>
+                    <div class="menu-box">
+                        <el-menu>
+                            <el-submenu v-for="(apiGroup) in callbackList" :key="apiGroup.group_id" :index="apiGroup.group_id">
+                                <template #title>
+                                    <div @click="getCallbackDetail(apiGroup.url, corp_input)">
+                                        <span style="position: absolute; top: -8px;font-weight: 1000; font-size: 16px">{{ apiGroup.title }}</span>
+                                        <span v-if="!apiGroup.subMenus" class="hide-arrow"></span>
+                                        <div class="callback-api">{{ apiGroup.url }}</div>
+                                    </div>
+                                </template>
+                                <div v-if="apiGroup.subMenus">
+                                    <el-menu-item v-for="(api) in apiGroup.subMenus" :key="api.id" :index="api.id"
+                                                  @click="getCallbackDetail(api.url, corp_input)">
+                                        <span style="position: absolute; top: -8px;font-weight: 1000">{{ api.title }}</span>
+                                        <div class="callback-api">{{ api.url }}</div>
+                                    </el-menu-item>
+                                </div>
+                            </el-submenu>
+                        </el-menu>
+                    </div>
+                </div>
+                <!-- 回调 - 请求结果区 -->
+                <div class="content-main">
+                    <el-form ref="form" :inline="true" style="margin-left: 16px">
+                        <el-form-item label="企业代号">
+                            <el-input v-model="corp_input" style="width: 400px"/>
+                        </el-form-item>
+                        <el-button style="margin-left: 10px; width: 100px" size="medium" type="primary"
+                                   @click="getCallbackDetail('', corp_input)">查询
+                        </el-button>
+                        <el-checkbox v-model="isAuto" border @change="getCallbackDetailAuto(corp_input)"
+                                     style="margin-left: 10px;"
+                                     size="medium">自动刷新</el-checkbox>
+                    </el-form>
+                    <el-table :data="tableData" style="width: 100%; margin: 15px" height="80vh" border>
+                        <el-table-column prop="index" type="index" label="序号" width="80" align="center"></el-table-column>
+                        <el-table-column prop="requestId" label="请求ID" width="200" align="center"></el-table-column>
+                        <el-table-column prop="requestUrl" label="请求URL" align="center" width="180"></el-table-column>
+                        <el-table-column prop="requestParam" label="请求参数" align="center" min-width="160">
+                            <template slot-scope="scope">
+                                <div class="clamp-text">{{ scope.row.requestParam }}</div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="returnValue" label="返回值" align="center" min-width="200"></el-table-column>
+                        <el-table-column prop="requestTime" label="请求时间" width="170" align="center"></el-table-column>
+                        <el-table-column fixed="right" label="操作" width="80" align="center">
+                            <template scope="scope">
+                                <el-button type="text" size="medium" @click="showDetails(scope.row)">明细</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="模拟企业" name="setting">
+            <div class="corp-form">
+                <el-form ref="settingForm" :model="settingForm" label-width="120px" style="margin-top: 10px" :rules="settingFormRules">
+
+                    <el-form-item label="企业代码" prop="code">
+                        <el-input v-model="settingForm.code"
+                                  placeholder="请输入一个英文代号"
+                                  style="display: inline-block; width: 60%">
+                        </el-input>
+                        <el-button type="success" plain
+                                   style="display: inline-block; margin-left: 10px; width: 120px"
+                                   @click="handleSettingSearch(settingForm.code)">查询
+                        </el-button>
+                    </el-form-item>
+
+                    <el-form-item label="企业名称" prop="name">
+                        <el-input v-model="settingForm.name" placeholder="企业中文名"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="企业LOGO" prop="logoUrl">
+                        <el-input v-model="settingForm.logoUrl" placeholder="企业LOGO完整URL"></el-input>
+                    </el-form-item>
+
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="openId" prop="openId">
+                                <el-input v-model="settingForm.openId" placeholder="openId"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="16">
+                            <el-form-item label="server" prop="server">
+                                <el-input v-model="settingForm.server" placeholder="server"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="secretId" prop="secretId">
+                                <el-input v-model="settingForm.secretId" placeholder="secretId"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="16">
+                            <el-form-item label="secretKey" prop="secretKey">
+                                <el-input v-model="settingForm.secretKey" placeholder="secretKey"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="signatureKey" prop="signatureKey">
+                                <el-input v-model="settingForm.signatureKey" placeholder="signatureKey"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="16">
+                            <el-form-item label="encodingKey" prop="encodingKey">
+                                <el-input v-model="settingForm.encodingKey" placeholder="encodingKey"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <div style="text-align: center">
+                        <el-button type="warning" plain style="width: 150px" @click="handleSettingSave">保存</el-button>
+                    </div>
+                </el-form>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="技术手册" name="manual">
+            <iframe src="https://hc.eqxiu.cn/doc/3/" style="width: 100%; height: calc(100vh - 64px); border: none;">
+            </iframe>
+        </el-tab-pane>
+    </el-tabs>
+
+    <!--    模拟回调 明细弹框        -->
+    <el-dialog  width="70%" :visible="isCallback" :close-on-click-modal="false" :show-close="false">
+        <div style="display: flex; justify-content: space-between">
+            <h2 style="position: absolute; top: 0;">回调明细</h2>
+            <el-button round type="info" style="position: absolute; top: 10px; right: 20px;" @click="isCallback = false">关闭</el-button>
+        </div>
+        <table  class="table-desc" style="width: 100%">
+            <tr><td class="td-label">请求 ID</td>  <td>{{selectedRow.requestId}}</td></tr>
+            <tr><td class="td-label">请求 URL</td> <td>{{selectedRow.requestUrl}}</td></tr>
+            <tr><td class="td-label">请求 参数</td> <td>
+                <textarea class="callback-desc-param">{{ selectedRow.requestParam }}</textarea>
+            </td></tr>
+            <tr><td class="td-label">返回值</td>   <td>
+                <textarea class="callback-desc-value">{{selectedRow.returnValue}}</textarea>
+            </td></tr>
+            <tr><td class="td-label">请求时间</td> <td>{{selectedRow.requestTime}}</td></tr>
+        </table>
+    </el-dialog>
+</div>
+</body>
+<script src="//lib.eqh5.com/vue/2.6.11/vue.min.js"></script>
+<script src="//lib.eqh5.com/element-ui/2.4.11/index.min.js"></script>
+<script src="${ctx}/static/js/axios.js"></script>
+
+<script>
+    window.defaultDomain = '${ctx}'
+</script>
+<script src="${ctx}/static/js/index.js"></script>
+</html>
+

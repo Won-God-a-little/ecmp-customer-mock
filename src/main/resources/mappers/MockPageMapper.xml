@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.eqxiu.mock.infra.persistence.mapper.MockPageMapper">
+
+    <resultMap id="mockPage" type="cn.eqxiu.mock.domain.entity.MockPage">
+        <id column="page_id" property="pageId"/>
+        <result column="page_ages" property="pageAges"/>
+        <result column="page_name" property="pageName"/>
+        <result column="page_url" property="pageUrl"/>
+    </resultMap>
+
+    <resultMap id="mockPageInfo" type="cn.eqxiu.mock.domain.entity.MockPageInfo">
+        <id column="group_id" property="groupId"/>
+        <result column="group_name" property="groupName"/>
+        <collection property="pages" resultMap="mockPage"/>
+    </resultMap>
+
+    <sql id="pageColumn">
+        a.page_id, a.page_ages, a.page_name, a.page_url
+    </sql>
+
+    <sql id="groupPage">
+        b.group_id, b.group_name
+    </sql>
+
+    <select id="getMockPageInfoByName" resultMap="mockPageInfo">
+        select <include refid="pageColumn"/>,<include refid="groupPage"/>
+        from page a
+        left join `group` b
+        on a.group_id = b.group_id
+        <where>
+            <if test="key != null and key != ''">
+                a.page_name like concat('%',#{key},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.eqxiu.mock.infra.persistence.mapper.CorpMapper">
+
+    <sql id="Base_Column_List">
+        code, name, logo_url, secret_id, secret_key, signature_key, encoding_key, open_id, server
+    </sql>
+
+    <select id="selectByCode" resultType="cn.eqxiu.mock.domain.entity.Corp">
+        select
+        <include refid="Base_Column_List"></include>
+        from corp a
+        where a.code = #{code}
+    </select>
+
+    <insert id="insertCorp" parameterType="cn.eqxiu.mock.domain.entity.Corp">
+        INSERT INTO corp <include refid="Base_Column_List"></include>
+        values (#{code},
+                #{name},
+                #{logoUrl},
+                #{signatureKey},
+                #{encodingKey},
+                #{signatureKey},
+                #{encodingKey},
+                #{openId}),
+                #{server}
+    </insert>
+
+    <update id="updateCorp" parameterType="cn.eqxiu.mock.domain.entity.Corp">
+        UPDATE corp
+            <set>
+                <if test="null != name and '' != name">`name` = #{name},</if>
+                <if test="null != logoUrl and '' != logoUrl">logo_url = #{logoUrl},</if>
+                <if test="null != secretId and '' != secretId">secret_id = #{secretId},</if>
+                <if test="null != secretKey and '' != secretKey">secret_key = #{secretKey},</if>
+                <if test="null != signatureKey and '' != signatureKey">signature_key = #{signatureKey},</if>
+                <if test="null != encodingKey and '' != encodingKey">encoding_key = #{encodingKey},</if>
+                <if test="null != server and '' != server">server = #{server},</if>
+                <if test="null != openId and '' != openId">open_id = #{openId}</if>
+            </set>
+        WHERE code = #{code}
+    </update>
+</mapper>

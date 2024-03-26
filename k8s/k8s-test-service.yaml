@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    description: ${PROJECT_NAME}
+  name: ${PROJECT_NAME}
+  namespace: ${GROUP_NAME}
+spec:
+  ports:
+    - name: port-${PROJECT_NAME}
+      port: 80
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    qcloud-app: ${PROJECT_NAME}
+    blueGreenVersion: ${blueGreenVersion}
+  sessionAffinity: None
+  type: ClusterIP

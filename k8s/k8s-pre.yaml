@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    qcloud-app: ${PROJECT_NAME}
+  name: ${DEPLOY_NAME}
+  namespace: ${GROUP_NAME}
+spec:
+  progressDeadlineSeconds: 300
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      qcloud-app: ${PROJECT_NAME}
+      blueGreenVersion: ${blueGreenVersion}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        qcloud-app: ${PROJECT_NAME}
+        blueGreenVersion: ${blueGreenVersion}
+    spec:
+      containers:
+        - env:
+            - name: SPRING_PROFILES
+              value: pre
+            - name: svcname
+              value: ${PROJECT_NAME}-stage
+          name: ${PROJECT_NAME}
+          image: ccr.ccs.tencentyun.com/eqxiu/${PROJECT_NAME}:${IMG_VERSION}
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8000
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 10
+            initialDelaySeconds: 35
+            periodSeconds: 3
+            successThreshold: 1
+            tcpSocket:
+              port: 8000
+            timeoutSeconds: 5
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              memory: 256Mi
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: qcloudregistrykey
+        - name: tencenthubkey
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

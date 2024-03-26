@@ -1,0 +1,6 @@
+2024-03-07 11:13:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PAGE" not found (this database is empty); SQL statement:
+SELECT * FROM
+        (SELECT * FROM page WHERE page.`page_name` LIKE concat('%',?,'%')) page_info
+        LEFT JOIN page_group
+        ON page_info.`page_group_id`=page_group.`page_group_id`; [42104-214]

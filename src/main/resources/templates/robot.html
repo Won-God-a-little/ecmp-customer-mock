@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>自动化批量执行页面</title>
+  <script src="//lib.eqh5.com/vue/2.6.11/vue.min.js"></script>
+  <!-- import JavaScript -->
+  <script src="//lib.eqh5.com/element-ui/2.4.11/index.min.js"></script>
+  <link rel="stylesheet" href="//lib.eqh5.com/element-ui/2.4.11/theme-chalk/index.min.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f2f2f2; /* 设置背景颜色 */
+    }
+
+    #app {
+      max-width: 500px; /* 设置内容容器的最大宽度 */
+      padding: 20px;
+      background-color: #ffffff; /* 设置内容容器的背景颜色 */
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+    }
+  </style>
+</head>
+
+<body>
+<div id="app">
+  <el-form ref="form" label-width="100px" style="margin-top: 10px">
+    <el-form-item label="系统类型">
+      <el-radio-group v-model="systemType">
+        <el-radio label="standard">标准系统</el-radio>
+        <el-radio label="custom">定制系统</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item v-if="systemType === 'standard'" label="运行环境">
+      <el-select v-model="env" placeholder="请选择运行环境">
+        <el-option label="测试环境" value="test"></el-option>
+        <el-option label="预发布环境" value="pre"></el-option>
+        <el-option label="生产环境" value="prd"></el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item v-if="systemType === 'custom'" label="地址">
+      <el-input v-model="userInfo.address" placeholder="请输入地址" style="width: 220px;"></el-input>
+    </el-form-item>
+
+    <el-form-item v-if="systemType === 'custom'" label="账号">
+      <el-input v-model="userInfo.account" placeholder="请输入账号" style="width: 220px;"></el-input>
+    </el-form-item>
+
+    <el-form-item v-if="systemType === 'custom'" label="密码">
+      <el-input v-model="userInfo.password" placeholder="请输入密码" style="width: 220px;"></el-input>
+    </el-form-item>
+
+    <el-form-item label="作品分类">
+      <el-select v-model="types" multiple placeholder="作品分类">
+        <el-option label="抽奖" value="hc"></el-option>
+        <el-option label="签到" value="hs"></el-option>
+        <el-option label="组队" value="ht"></el-option>
+        <el-option label="养成" value="hd"></el-option>
+        <el-option label="集卡" value="hj"></el-option>
+        <el-option label="助力" value="hz"></el-option>
+        <el-option label="接物" value="hy"></el-option>
+        <el-option label="表单投票" value="ft"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="用例编号">
+      <el-input v-model="nums" placeholder="请输入用例编号，以逗号分隔" style="width: 220px;"></el-input>
+    </el-form-item>
+    <el-form-item label="测试类型">
+      <el-radio-group v-model="testType">
+        <el-radio label="调试测试">调试测试</el-radio>
+        <el-radio label="集成测试">集成测试</el-radio>
+        <el-radio label="系统测试">系统测试</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="执行人">
+      <el-select v-model="mobile" placeholder="执行人">
+        <el-option label="韩强" value="13688410417"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="是否执行预览">
+      <el-radio-group v-model="isPreview">
+        <el-radio label="true">是</el-radio>
+        <el-radio label="false">否</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item>
+      <el-button class="responsive-button" type="primary" size="medium" @click="submitForm">执行</el-button>
+    </el-form-item>
+  </el-form>
+</div>
+
+<script>
+  new Vue({
+    el: "#app",
+    data() {
+      return {
+        systemType:'standard',
+        env: 'test',
+        userInfo:{address:'',account:'',password:''},
+        types: [],
+        isPreview:'true',
+        mobile:'13688410417',
+        nums: '',
+        testType:'集成测试'
+      };
+    },
+    methods: {
+      submitForm() {
+        const data = {
+          env: this.env,
+          testType:this.testType,
+          systemType:this.systemType,
+          envUerInfo:this.userInfo,
+          isPreview:this.isPreview === 'true',
+          caseNums: this.types.concat(this.nums && this.nums.length > 0 ? this.nums.split(',') : [])
+        };
+        fetch("/ecmp/mock/batch/excute", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        })
+                .then(response => {
+                  if (response.ok) {
+                    return response.text();
+                  } else {
+                    throw new Error("请求失败");
+                  }
+                })
+                .then(text => {
+                  console.log(text);
+                  const response = JSON.parse(text);
+                  if (response.success) {
+                    alert(response.msg);
+                  } else {
+                    // 请求失败处理逻辑
+                    alert("请求失败：" + response.msg);
+                  }
+                })
+                .catch(error => {
+                  alert("请求发生错误，请稍后重试");
+                });
+      }
+    }
+  });
+</script>
+</body>
+
+</html>

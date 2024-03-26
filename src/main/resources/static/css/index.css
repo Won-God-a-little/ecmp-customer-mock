@@ -1,0 +1,319 @@
+/* index页面样式 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+#app {
+    margin: 0;
+    background-color: rgba(24, 144, 255, 0.03);
+    height: 100vh;
+}
+
+.col-two {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+/* 表格 */
+.table-desc {
+    border-collapse: collapse;
+}
+.clamp-text {
+    max-height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.table-desc th, .table-desc td {
+    border: 1px solid black;
+    padding: 10px;
+    font-weight: bold;
+}
+.table-desc tbody {
+    background-color: white;
+}
+.td-label {
+    text-align: center;
+    font-size: 16px;
+    width: 111px;
+}
+.el-table thead {
+    color: #909399;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+/* 导航栏*/
+.el-tabs__nav-scroll {
+    padding-left: 100px;
+}
+.el-tabs__item {
+    font-size: 22px;
+}
+.el-tabs__header {
+    position: relative;
+    margin: 0 0 16px;
+    height: 38px;
+    padding-bottom: 4px;
+    background-color: white;
+    box-shadow: 1.9px 2.4px 2.7px rgba(0, 0, 0, 0.025), 4.9px 6px 6.9px rgba(0, 0, 0, 0.035), 9.9px 12.2px 14.2px rgba(0, 0, 0, 0.045), 20.4px 25.2px 29.2px rgba(0, 0, 0, 0.055), 56px 69px 80px rgba(0, 0, 0, 0.08);
+}
+.el-tabs__content {
+    overflow: hidden;
+    position: relative;
+    margin: 0 10px 0 10px;
+    height: calc(100vh - 58px);
+}
+
+/* 菜单 */
+/* 修改标题样式 */
+.menu-box {
+    height: calc(100vh - 240px);
+    overflow: auto;
+}
+
+.hide-arrow {
+    display: inline-block;
+    float: right;
+
+    background-color: white;
+    width: 10px;
+    height: 10px;
+
+    position: relative;
+    top: 21px;
+
+    z-index: 1;
+}
+
+/* 修改接口 URL 样式 */
+.text-url {
+    color: #333;
+    cursor: pointer;
+    padding-left: 30px;
+}
+
+.text-url:hover {
+    padding-left: 30px;
+    background-color: #c2e6f6;
+}
+
+/* 修改提示框样式 */
+.el-tooltip__popper {
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+}
+
+
+/* 侧边 */
+.aside {
+    padding: 20px 10px 10px 10px;
+    background-color: white;
+    border-left: solid 3px grey;
+    border-radius: 10px;
+    width: 20%;
+    height: calc(100vh - 96px);
+    box-shadow:
+            2.5px 0.7px 1.9px rgba(0, 0, 0, 0.009),
+            5.9px 1.7px 4.3px rgba(0, 0, 0, 0.014),
+            10.6px 3px 7.7px rgba(0, 0, 0, 0.018),
+            17.7px 5px 12.8px rgba(0, 0, 0, 0.021),
+            29.1px 8.2px 21.2px rgba(0, 0, 0, 0.023),
+            50.9px 14.3px 37px rgba(0, 0, 0, 0.027),
+            110px 31px 80px rgba(0, 0, 0, 0.04)
+;
+}
+/* 主体 */
+.content-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: calc(80% - 50px);
+    height: calc(100vh - 68px);
+    margin-left: 20px
+}
+
+/* 模拟调用 */
+.invoke-params {
+    border: 1px solid rgb(153, 153, 153);
+    border-radius: 7px;
+    padding: 10px;
+    background-color: white;
+}
+.el-input-group__append {
+    border-left: 0;
+    background-color: orange;
+    color: white;
+}
+.query-params-head {
+    display: flex;
+    padding: 10px 10px 10px 20px;
+    justify-content: space-between;
+}
+.params-table {
+    width: 97%;
+    margin: 0 15px 0 15px;
+
+    overflow-y: auto;
+}
+.invoke-result {
+    height: 84%;
+    border: 1px solid rgb(153, 153, 153);
+    border-radius: 7px;
+    padding: 10px;
+    background-color: white;
+}
+.el-textarea__inner {
+    height: 100%;
+    padding: 0 15px;
+    border: 0 solid #dcdfe6;
+}
+/* 模拟集成 */
+.iframe-box {
+    height: calc(100vh - 58px);
+    margin-bottom: 10px;
+    border: 1px solid #999;
+}
+/* 模拟回调 */
+.callback-api {
+    position: absolute;
+    top: 15px;
+    font-size: 13px;
+    width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.callback-desc-param {
+    width: 100%;
+    height: 223px;
+}
+.callback-desc-value {
+    width: 100%;
+    height: 75px;
+}
+.el-dialog {
+    border-radius: 15px;
+    background-color: #f4f5fd;
+}
+/* 模拟企业 */
+
+.corp-form {
+    width: 60%;
+    padding: 20px;
+    margin: auto;
+    border: 1px solid #a3bff7;
+    border-radius: 6px;
+    background-color: white;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+
+/*自制按钮*/
+.custom-btn {
+    width: 130px;
+    height: 40px;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+    7px 7px 20px 0px rgba(0, 0, 0, .1),
+    4px 4px 5px 0px rgba(0, 0, 0, .1);
+    outline: none;
+}
+
+.btn {
+    background: linear-gradient(0deg, rgba(255, 151, 0, 1) 0%, rgba(251, 75, 2, 1) 100%);
+    line-height: 42px;
+    padding: 0;
+    border: none;
+}
+
+.btn span {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.btn:before,
+.btn:after {
+    position: absolute;
+    content: "";
+    right: 0;
+    bottom: 0;
+    background: rgba(251, 75, 2, 1);
+    box-shadow: -7px -7px 20px 0px rgba(255, 255, 255, .9),
+    -4px -4px 5px 0px rgba(255, 255, 255, .9),
+    7px 7px 20px 0px rgba(0, 0, 0, .2),
+    4px 4px 5px 0px rgba(0, 0, 0, .3);
+    transition: all 0.3s ease;
+}
+
+.btn:before {
+    height: 0%;
+    width: 2px;
+}
+
+.btn:after {
+    width: 0%;
+    height: 2px;
+}
+
+.btn:hover {
+    color: rgba(251, 75, 2, 1);
+    background: transparent;
+}
+
+.btn:hover:before {
+    height: 100%;
+}
+
+.btn:hover:after {
+    width: 100%;
+}
+
+.btn span:before,
+.btn span:after {
+    position: absolute;
+    content: "";
+    left: 0;
+    top: 0;
+    background: rgba(251, 75, 2, 1);
+    box-shadow: -7px -7px 20px 0px rgba(255, 255, 255, .9),
+    -4px -4px 5px 0px rgba(255, 255, 255, .9),
+    7px 7px 20px 0px rgba(0, 0, 0, .2),
+    4px 4px 5px 0px rgba(0, 0, 0, .3);
+    transition: all 0.3s ease;
+}
+
+.btn span:before {
+    width: 2px;
+    height: 0%;
+}
+
+.btn span:after {
+    height: 2px;
+    width: 0%;
+}
+
+.btn span:hover:before {
+    height: 100%;
+}
+
+.btn span:hover:after {
+    width: 100%;
+}
